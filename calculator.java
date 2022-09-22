@@ -8,11 +8,14 @@ class cal extends JFrame {
     JTextField inp;
     JLabel out;
     int pn = 0;
+    String a, b;
+    char operationControl = ',';
+    char inpdefault = '?';
+    String bl;
 
     // Button Font, Font Style, Font Size
     void buttonPropertySet(JButton b) {
         b.setFont(new Font("Dialog", Font.PLAIN, 22));
-
         b.setForeground(Color.RED);
         b.setBackground(Color.WHITE);
         if (b.getText() == "%") {
@@ -33,11 +36,78 @@ class cal extends JFrame {
     // Input Button Get Input Handling
     void hillClimb(ActionEvent e) {
         String s = e.getActionCommand();
-        String str = inp.getText();
+        String str;
+        if (inpdefault == '!') {
+            inp.setText("");
+            inpdefault = '?';
+        }
+        str = inp.getText();
         str += s;
         inp.setText(str);
     }
 
+    // Operation Handle 
+    void doOperation(ActionEvent e){
+        if(operationControl == ','){
+            a = inp.getText();
+            inp.setText("");
+            String s = e.getActionCommand();
+            if(s == "+")
+                operationControl = '+';
+            else if(s=="-")
+                operationControl = '-';
+            else if(s=="x")
+                operationControl = 'x';
+            else if(s=="/")
+                operationControl = '/';
+        }
+        else if(operationControl != ','){
+            b = inp.getText();
+            Float aa = Float.parseFloat(a);
+            Float bb = Float.parseFloat(b);
+            if(operationControl == '+'){
+                String s = String.valueOf(aa+bb);
+                out.setText(s);
+                inp.setText(s);
+                a = "";
+                b = "";
+                operationControl = ',';
+                inpdefault = '!';
+            }
+            else if(operationControl == '-'){
+                String s = String.valueOf(aa-bb);
+                out.setText(s);
+                inp.setText(s);
+                a = "";
+                b = "";
+                operationControl = '-';
+                inpdefault = '!';
+            }
+            else if(operationControl == 'x'){
+                String s = String.valueOf(aa*bb);
+                out.setText(s);
+                inp.setText(s);
+                a = "";
+                b = "";
+                operationControl = 'x';
+                inpdefault = '!';
+            }
+            else if(operationControl == '/'){
+                try{
+                    String s = String.valueOf(aa/bb);
+                    out.setText(s);
+                    inp.setText(s);
+                    a = "";
+                    b = "";
+                    operationControl = '/';
+                    inpdefault = '!';
+                }
+                catch(ArithmeticException ex){
+                    out.setText(String.valueOf(ex));
+                }
+            }
+        }
+    }
     cal() {
         // Input and Output Start
         inp = new JTextField("");
@@ -164,16 +234,23 @@ class cal extends JFrame {
                 inp.setText("");
                 out.setText("");
                 pn = 0;
+
+                operationControl=',';
+                a = "";
+                b = "";
             }
         });
 
         cl.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent x) {
                 String str = inp.getText();
-                // String hstr = str;
-                int l = str.length();
-                str = str.substring(0, l - 1);
-                inp.setText(str);
+                int ll = str.length();
+                if(ll != 0){
+                    int l = str.length();
+                    str = str.substring(0, l - 1);
+                    inp.setText(str);
+
+                }
             }
         });
         inp.addKeyListener(new KeyAdapter() {
@@ -197,6 +274,7 @@ class cal extends JFrame {
             }
         });
 
+        //------------- Input Number 
         n0.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 hillClimb(e);
@@ -266,6 +344,83 @@ class cal extends JFrame {
                 }
             }
         });
+
+        // Operation Added 
+        sum.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                doOperation(e);
+            }
+        });
+        sub.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                doOperation(e);
+            }
+        });
+        mul.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                doOperation(e);
+            }
+        });
+        div.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                doOperation(e);
+            }
+        });
+        eq.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+               if(operationControl != ','){
+                    b = inp.getText();
+                    Float aa = Float.parseFloat(a);
+                    Float bb = Float.parseFloat(b);
+                    if(operationControl == '+'){
+                        String s = String.valueOf(aa+bb);
+                        out.setText(s);
+                        inp.setText(s);
+                        a = "";
+                        b = "";
+                        operationControl = ',';
+                        inpdefault = '!';
+                    }
+                    else if(operationControl == '-'){
+                        String s = String.valueOf(aa-bb);
+                        out.setText(s);
+                        inp.setText(s);
+                        a = "";
+                        b = "";
+                        operationControl = ',';
+                        inpdefault = '!';
+                    }
+                    else if(operationControl == 'x'){
+                        String s = String.valueOf(aa*bb);
+                        out.setText(s);
+                        inp.setText(s);
+                        a = "";
+                        b = "";
+                        operationControl = ',';
+                        inpdefault = '!';
+                    }
+                    else if(operationControl == '/'){
+                        try{
+                            // int cc,dd;
+                            // cc = Integer.parseInt(aa);
+                            // dd = Integer.parseInt(bb);
+                            String s = String.valueOf(aa/bb);
+                            out.setText(s);
+                            inp.setText(s);
+                            a = "";
+                            b = "";
+                            operationControl = '/';
+                            inpdefault = '!';
+                        }
+                        catch(ArithmeticException ex){
+                            out.setText(String.valueOf(ex));
+                        }
+                    }
+                }
+            }
+        });
+        
+
 
         setLayout(null);
         setTitle("Calculator");
